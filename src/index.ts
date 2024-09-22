@@ -10,7 +10,37 @@ app.post('/verify', async (c) => {
   const verified = await verifyProof(req.proof, req.action);
   console.log("verified", verified);
 
-  return c.json( verified )
+  return c.json(verified)
+})
+
+app.post('/create', async (c) => {
+
+  const body = await c.req.json<{ id: number }>();
+  console.log(body)
+
+  // const app_id = "app_staging_1fe6ccaa14409704f71091493087e46f";
+  const app_id = "app_3fce0a48811b44d2fc3e452699a480d4";
+
+
+
+  await fetch(`https://developer.worldcoin.org/api/v2/create-action/${app_id}`, {
+    method: 'POST',
+    headers: {
+      'authorization': `Bearer api_a2V5Xzk5ODBlYjU1N2Y2M2IzMjBkMTRkMjI2NzRkOTRhMDZlOnNrXzkyYWQ1NTJjNDFiMmE1ZDMwZTMwNzkxZTQzODQxZTE2OWFmMjkwOGNkOGRkYTY3MQ`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: String(body.id),
+      name: String(body.id),
+      description: "test World ID in the Worldcoin Developer Documentation",
+      max_verifications: 1,
+    }),
+  })
+    .then(res => res.text())
+    .then(console.log)
+    .catch(console.error)
+
+  return c.json({success: true})
 })
 
 const verifyProof = async (proof: any, action: any) => {
